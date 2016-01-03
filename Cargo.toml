@@ -1,0 +1,8 @@
+[package]
+name = "orbital-mechanics"
+version = "0.1.0"
+authors = ["Nikita Chashchinskii <nikita.chashinsky@yandex.ru>"]
+
+[dependencies]
+nalgebra = "0.4"
+rand = "0.3"
