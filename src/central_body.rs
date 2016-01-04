@@ -2,6 +2,7 @@ extern crate nalgebra as na;
 
 use self::na::*;
 
+#[derive(Debug)]
 pub struct CentralBody {
     pub mu: f64,
     pub up: Vec3<f64>,

@@ -6,6 +6,7 @@ use koe::*;
 use std::f64::consts::*;
 
 // Cartesian State Vectors
+#[derive(Clone, Debug)]
 pub struct CSV<'a> {
     pub r: Vec3<f64>,
     pub v: Vec3<f64>,
@@ -29,12 +30,7 @@ impl<'a> CSV<'a> {
         self.v.approx_eq_eps(&other.v, eps) &&
         self.cb.approx_eq(&other.cb)
     }
-
-    pub fn print(&self) {
-        println!("{} {} {}", self.r.x, self.r.y, self.r.z);
-        println!("{} {} {}", self.v.x, self.v.y, self.v.z);
-    }
-
+    
     pub fn to_koe(&self) -> KOE {
         let r = self.r.clone();
         let v = self.v.clone();

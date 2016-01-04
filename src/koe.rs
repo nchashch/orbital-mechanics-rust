@@ -4,6 +4,7 @@ use central_body::*;
 use csv::*;
 
 // Keplerian Orbital Elements
+#[derive(Clone, Debug)]
 pub struct KOE<'a> {
     pub a: f64,
     pub e: f64,
@@ -50,16 +51,6 @@ impl<'a> KOE<'a> {
         approx_eq_eps(&self.lp, &other.lp, &eps) &&
         approx_eq_eps(&self.m0, &other.m0, &eps) &&
         self.cb.approx_eq(&other.cb)
-    }
-
-    pub fn print(&self) {
-        println!("{}", self.a);
-        println!("{}", self.e);
-        println!("{}", self.inc);
-        println!("{}", self.lan);
-        println!("{}", self.ap);
-        println!("{}", self.lp);
-        println!("{}", self.m0);
     }
 
     pub fn to_csv(&self) -> CSV {
