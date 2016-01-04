@@ -11,20 +11,18 @@ pub struct KOE<'a> {
     pub inc: f64,
     pub lan: f64,
     pub ap: f64,
-    pub lp: f64,
     pub m0: f64, // Mean anomaly
     pub cb: &'a CentralBody,
 }
 
 impl<'a> KOE<'a> {
-    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, lp: f64, m0: f64, cb: &'a CentralBody) -> KOE {
+    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: &'a CentralBody) -> KOE {
         KOE {
             a: a,
             e: e,
             inc: inc,
             lan: lan,
             ap: ap,
-            lp: lp,
             m0: m0,
             cb: cb,
         }
@@ -37,7 +35,6 @@ impl<'a> KOE<'a> {
         approx_eq_eps(&self.inc, &other.inc, &eps) &&
         approx_eq_eps(&self.lan, &other.lan, &eps) &&
         approx_eq_eps(&self.ap, &other.ap, &eps) &&
-        approx_eq_eps(&self.lp, &other.lp, &eps) &&
         approx_eq_eps(&self.m0, &other.m0, &eps) &&
         self.cb.approx_eq(&other.cb)
     }
@@ -48,7 +45,6 @@ impl<'a> KOE<'a> {
         approx_eq_eps(&self.inc, &other.inc, &eps) &&
         approx_eq_eps(&self.lan, &other.lan, &eps) &&
         approx_eq_eps(&self.ap, &other.ap, &eps) &&
-        approx_eq_eps(&self.lp, &other.lp, &eps) &&
         approx_eq_eps(&self.m0, &other.m0, &eps) &&
         self.cb.approx_eq(&other.cb)
     }
@@ -61,14 +57,12 @@ impl<'a> KOE<'a> {
             .atan2((1.0-self.e).sqrt()*(ea/2.0).cos());
         let dist = self.a*(1.0-self.e*ea.cos());
         let mut r = (self.cb.reference*ta.cos() + self.cb.right*ta.sin()) * dist;
-        //println!("r dot up = {}", dot(&r, &self.cb.up));
         let mut v = (self.cb.reference*(-ea.sin()) +
                     self.cb.right*((1.0-self.e.powf(2.0)).sqrt()*ea.cos())) * ((self.cb.mu*self.a).sqrt()/dist);
-        //println!("v dot up = {}", dot(&v, &self.cb.up));
         let mut rot = Rot3::new_identity(3);
         if approx_eq(&self.inc, &0.0) {
             if !approx_eq(&self.e, &0.0) {
-                rot = Rot3::new(self.cb.up * self.lp);
+                rot = Rot3::new(self.cb.up * self.ap);
             }
         } else {
             let lan_axisangle = self.cb.up * self.lan;

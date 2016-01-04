@@ -20,7 +20,6 @@ fn koe_invariance() {
     let mut inc_ok = 0;
     let mut lan_ok = 0;
     let mut ap_ok = 0;
-    let mut lp_ok = 0;
     let mut m0_ok = 0;
     for _ in 0..iterations {
         let cb = get_random_cb();
@@ -42,9 +41,6 @@ fn koe_invariance() {
         if approx_eq_eps(&koe0.ap, &koe1.ap, &eps) {
             ap_ok += 1;
         }
-        if approx_eq_eps(&koe0.lp, &koe1.lp, &eps) {
-            lp_ok += 1;
-        }
         if approx_eq_eps(&koe0.m0, &koe1.m0, &eps) {
             m0_ok += 1;
         }
@@ -54,7 +50,6 @@ fn koe_invariance() {
     let inc_ok_f = inc_ok as f32 / iterations as f32;
     let lan_ok_f = lan_ok as f32 / iterations as f32;
     let ap_ok_f = ap_ok as f32 / iterations as f32;
-    let lp_ok_f = lp_ok as f32 / iterations as f32;
     let m0_ok_f = m0_ok as f32 / iterations as f32;
     let threshold = 0.99;
     let mut failed = false;
@@ -86,12 +81,6 @@ fn koe_invariance() {
             failed = true;
         }
     }
-    if lp_ok_f < threshold {
-        println!("lp_ok_f = {}", lp_ok_f);
-        if !failed {
-            failed = true;
-        }
-    }
     if m0_ok_f < threshold {
         println!("m0_ok_f = {}", m0_ok_f);
         if !failed {
@@ -105,7 +94,7 @@ fn koe_invariance() {
 
 #[test]
 fn csv_invariance() {
-    let iterations = 1000;
+    let iterations = 10000;
     let eps = 1.0e-3;
     let mut r_ok = 0;
     let mut v_ok = 0;
@@ -174,12 +163,11 @@ fn get_random_koe(cb: &CentralBody) -> KOE {
     if approx_eq(&ecc, &0.0) {
         ap = 0.0;
     }
-    let mut lp = 0.0;
     if approx_eq(&inc, &0.0) {
         lan = 0.0;
         ap = 0.0;
         if !approx_eq(&ecc, &0.0) {
-            lp = rng.gen_range(0.0, 2.0*PI);
+            ap = rng.gen_range(0.0, 2.0*PI);
         }
     }
     KOE::new(
@@ -188,7 +176,6 @@ fn get_random_koe(cb: &CentralBody) -> KOE {
         inc, // Inclination
         lan, // Longitude of Ascending Node
         ap,  // Argument of Periapsis
-        lp,  // Longitude of Periapsis
         rng.gen_range(-PI, PI), // Mean anomaly
         &cb
     )

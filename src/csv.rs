@@ -64,16 +64,16 @@ impl<'a> CSV<'a> {
         if approx_eq(&es, &0.0) {
             ap = 0.0;
         }
-        let mut lp = 0.0;
         if approx_eq(&inc, &0.0) {
             lan = 0.0;
-            ap = 0.0;
             if !approx_eq(&es, &0.0) {
-                lp = if dot(&e, &self.cb.right) >= 0.0 {
+                ap = if dot(&e, &self.cb.right) >= 0.0 {
                     (dot(&self.cb.reference, &e)/norm(&e)).acos()
                 } else {
                     2.0*PI - (dot(&self.cb.reference, &e)/norm(&e)).acos()
                 };
+            } else {
+                ap = 0.0;
             }
         }
 
@@ -103,6 +103,6 @@ impl<'a> CSV<'a> {
         let ea = 2.0*((ta/2.0).tan()/((1.0+es)/(1.0-es)).sqrt()).atan();
         let m0 = ea - es * ea.sin();
         let a = 1.0/(2.0/norm(&r) - sqnorm(&v)/&self.cb.mu);
-        KOE::new(a, es, inc, lan, ap, lp, m0, self.cb)
+        KOE::new(a, es, inc, lan, ap, m0, self.cb)
     }
 }
