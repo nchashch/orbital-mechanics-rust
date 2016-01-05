@@ -4,17 +4,18 @@ use self::nalgebra::*;
 use central_body::*;
 use koe::*;
 use std::f64::consts::*;
+use std::rc::*;
 
 // Cartesian State Vectors
 #[derive(Clone, Debug)]
-pub struct CSV<'a> {
+pub struct CSV {
     pub r: Vec3<f64>,
     pub v: Vec3<f64>,
-    pub cb: &'a CentralBody,
+    pub cb: Rc<CentralBody>,
 }
 
-impl<'a> CSV<'a> {
-    pub fn new(r: Vec3<f64>, v: Vec3<f64>, cb: &'a CentralBody ) -> CSV {
+impl CSV {
+    pub fn new(r: Vec3<f64>, v: Vec3<f64>, cb: Rc<CentralBody> ) -> CSV {
         CSV { r: r, v: v, cb: cb }
     }
 
@@ -103,6 +104,6 @@ impl<'a> CSV<'a> {
         let ea = 2.0*((ta/2.0).tan()/((1.0+es)/(1.0-es)).sqrt()).atan();
         let m0 = ea - es * ea.sin();
         let a = 1.0/(2.0/norm(&r) - sqnorm(&v)/&self.cb.mu);
-        KOE::new(a, es, inc, lan, ap, m0, self.cb)
+        KOE::new(a, es, inc, lan, ap, m0, self.cb.clone())
     }
 }

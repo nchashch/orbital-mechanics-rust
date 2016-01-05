@@ -7,6 +7,7 @@ mod csv;
 mod koe;
 mod central_body;
 use std::f64::consts::PI;
+use std::rc::*;
 use central_body::*;
 use csv::*;
 use koe::*;
@@ -23,7 +24,7 @@ fn koe_invariance() {
     let mut m0_ok = 0;
     for _ in 0..iterations {
         let cb = get_random_cb();
-        let koe0 = get_random_koe(&cb);
+        let koe0 = get_random_koe(Rc::<CentralBody>::new(cb));
         let csv0 = koe0.to_csv();
         let koe1 = csv0.to_koe();
         if approx_eq_eps(&koe0.a, &koe1.a, &eps) {
@@ -100,7 +101,7 @@ fn csv_invariance() {
     let mut v_ok = 0;
     for _ in 0..iterations {
         let cb = get_random_cb();
-        let koe0 = get_random_koe(&cb);
+        let koe0 = get_random_koe(Rc::<CentralBody>::new(cb));
         let csv0 = koe0.to_csv();
         let koe1 = csv0.to_koe();
         let csv1 = koe1.to_csv();
@@ -154,7 +155,7 @@ fn get_random_cb() -> CentralBody {
     )
 }
 
-fn get_random_koe(cb: &CentralBody) -> KOE {
+fn get_random_koe(cb: Rc<CentralBody>) -> KOE {
     let mut rng = thread_rng();
     let ecc = rng.gen_range(0.0, 1.0);
     let inc = rng.gen_range(0.0, PI);
@@ -177,6 +178,6 @@ fn get_random_koe(cb: &CentralBody) -> KOE {
         lan, // Longitude of Ascending Node
         ap,  // Argument of Periapsis
         rng.gen_range(-PI, PI), // Mean anomaly
-        &cb
+        cb
     )
 }

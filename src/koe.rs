@@ -2,21 +2,22 @@ extern crate nalgebra;
 use self::nalgebra::*;
 use central_body::*;
 use csv::*;
+use std::rc::*;
 
 // Keplerian Orbital Elements
 #[derive(Clone, Debug)]
-pub struct KOE<'a> {
+pub struct KOE {
     pub a: f64,
     pub e: f64,
     pub inc: f64,
     pub lan: f64,
     pub ap: f64,
     pub m0: f64, // Mean anomaly
-    pub cb: &'a CentralBody,
+    pub cb: Rc<CentralBody>,
 }
 
-impl<'a> KOE<'a> {
-    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: &'a CentralBody) -> KOE {
+impl KOE {
+    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: Rc<CentralBody>) -> KOE {
         KOE {
             a: a,
             e: e,
@@ -76,7 +77,7 @@ impl<'a> KOE<'a> {
         }
         r = rot.transform(&r);
         v = rot.transform(&v);
-        CSV::new(r, v, self.cb)
+        CSV::new(r, v, self.cb.clone())
     }
 
     fn newton_raphson(m0: &f64, e: &f64, iterations: &i32) -> f64 {
