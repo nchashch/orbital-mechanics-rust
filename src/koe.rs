@@ -3,6 +3,7 @@ use self::nalgebra::*;
 use central_body::*;
 use csv::*;
 use std::rc::*;
+use tickable::*;
 
 // Keplerian Orbital Elements
 #[derive(Clone, Debug)]
@@ -14,6 +15,21 @@ pub struct KOE {
     pub ap: f64,
     pub m0: f64, // Mean anomaly
     pub cb: Rc<CentralBody>,
+}
+
+impl Tickable for KOE {
+    fn tick(&self, dt: &f64) -> Self {
+        let n = (self.cb.mu/self.a.powf(3.0)).sqrt();
+        KOE::new(
+            self.a,
+            self.e,
+            self.inc,
+            self.lan,
+            self.ap,
+            self.m0 + n * dt,
+            self.cb.clone()
+        )
+    }
 }
 
 impl KOE {

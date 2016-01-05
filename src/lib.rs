@@ -6,6 +6,7 @@ use nalgebra::*;
 mod csv;
 mod koe;
 mod central_body;
+mod tickable;
 use std::f64::consts::PI;
 use std::rc::*;
 use central_body::*;
