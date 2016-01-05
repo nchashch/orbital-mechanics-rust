@@ -12,6 +12,7 @@ use std::rc::*;
 use central_body::*;
 use csv::*;
 use koe::*;
+use tickable::*;
 
 #[test]
 fn koe_invariance() {
