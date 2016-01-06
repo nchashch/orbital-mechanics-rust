@@ -1,10 +1,14 @@
 extern crate nalgebra;
 extern crate rand;
 
-mod csv;
-mod koe;
-mod central_body;
-mod tickable;
+pub mod csv;
+pub mod koe;
+pub mod central_body;
+pub mod tick;
+pub use central_body::*;
+pub use csv::*;
+pub use koe::*;
+pub use tick::*;
 
 #[cfg(test)]
 mod tests {
@@ -13,7 +17,7 @@ mod tests {
     use central_body::*;
     use csv::*;
     use koe::*;
-    use tickable::*;
+    use tick::*;
     use rand::*;
     use nalgebra::*;
 

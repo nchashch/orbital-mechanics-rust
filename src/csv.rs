@@ -5,7 +5,7 @@ use central_body::*;
 use koe::*;
 use std::f64::consts::*;
 use std::rc::*;
-use tickable::*;
+use tick::*;
 
 // Cartesian State Vectors
 #[derive(Clone, Debug)]
@@ -15,7 +15,7 @@ pub struct CSV {
     pub cb: Rc<CentralBody>,
 }
 
-impl Tickable for CSV {
+impl Tick for CSV {
     fn tick(&self, dt: &f64) -> Self {
         let acc = -self.r*(self.cb.mu/norm(&self.r).powf(3.0));
         let v = self.v + acc * *dt;
