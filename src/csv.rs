@@ -16,10 +16,10 @@ pub struct CSV {
 }
 
 impl Tick for CSV {
-    fn tick(&self, dt: &f64) -> Self {
+    fn tick(&self, dt: f64) -> Self {
         let acc = -self.r*(self.cb.mu/norm(&self.r).powf(3.0));
-        let v = self.v + acc * *dt;
-        let r = self.r + self.v * *dt;
+        let v = self.v + acc * dt;
+        let r = self.r + self.v * dt;
         CSV::new(r, v, self.cb.clone())
     }
 }

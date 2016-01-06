@@ -18,7 +18,7 @@ pub struct KOE {
 }
 
 impl Tick for KOE {
-    fn tick(&self, dt: &f64) -> Self {
+    fn tick(&self, dt: f64) -> Self {
         let n = (self.cb.mu/self.a.powf(3.0)).sqrt();
         KOE::new(
             self.a,
