@@ -1,5 +1,5 @@
 [package]
-name = "orbital-mechanics"
+name = "orbital_mechanics"
 version = "0.1.0"
 authors = ["Nikita Chashchinskii <nikita.chashinsky@yandex.ru>"]
 
