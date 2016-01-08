@@ -15,9 +15,7 @@ mod tests {
     use std::f64::consts::PI;
     use std::rc::*;
     use central_body::*;
-    use csv::*;
     use koe::*;
-    use tick::*;
     use rand::*;
     use nalgebra::*;
 
