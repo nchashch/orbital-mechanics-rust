@@ -29,19 +29,6 @@ impl CSV {
         CSV { r: r, v: v, cb: cb }
     }
 
-    pub fn approx_eq(&self, other: &CSV) -> bool {
-        let eps = 1.0e-4;
-        self.r.approx_eq_eps(&other.r, &eps) &&
-        self.v.approx_eq_eps(&other.v, &eps) &&
-        self.cb.approx_eq(&other.cb)
-    }
-
-    pub fn approx_eq_eps(&self, other: &CSV, eps: &f64) -> bool {
-        self.r.approx_eq_eps(&other.r, eps) &&
-        self.v.approx_eq_eps(&other.v, eps) &&
-        self.cb.approx_eq(&other.cb)
-    }
-    
     pub fn to_koe(&self) -> KOE {
         let r = self.r.clone();
         let v = self.v.clone();

@@ -23,11 +23,4 @@ impl CentralBody {
             reference: reference,
         }
     }
-    
-    pub fn approx_eq(&self, other: &CentralBody) -> bool {
-        na::approx_eq(&self.mu, &other.mu) &&
-        self.up.approx_eq(&other.up) &&
-        self.reference.approx_eq(&other.reference) &&
-        self.right.approx_eq(&other.right)
-    }
 }

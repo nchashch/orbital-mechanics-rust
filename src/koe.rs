@@ -63,27 +63,6 @@ impl KOE {
         }
     }
     
-    pub fn approx_eq(&self, other: &KOE) -> bool {
-        let eps = 1.0e-5;
-        approx_eq_eps(&self.a, &other.a, &eps) &&
-        approx_eq_eps(&self.e, &other.e, &eps) &&
-        approx_eq_eps(&self.inc, &other.inc, &eps) &&
-        approx_eq_eps(&self.lan, &other.lan, &eps) &&
-        approx_eq_eps(&self.ap, &other.ap, &eps) &&
-        approx_eq_eps(&self.m0, &other.m0, &eps) &&
-        self.cb.approx_eq(&other.cb)
-    }
-
-    pub fn approx_eq_eps(&self, other: &KOE, eps: &f64) -> bool {
-        approx_eq_eps(&self.a, &other.a, &eps) &&
-        approx_eq_eps(&self.e, &other.e, &eps) &&
-        approx_eq_eps(&self.inc, &other.inc, &eps) &&
-        approx_eq_eps(&self.lan, &other.lan, &eps) &&
-        approx_eq_eps(&self.ap, &other.ap, &eps) &&
-        approx_eq_eps(&self.m0, &other.m0, &eps) &&
-        self.cb.approx_eq(&other.cb)
-    }
-
     pub fn to_csv(&self) -> CSV {
         let m0 = self.m0;
         let iterations = 10;
