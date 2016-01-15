@@ -3,9 +3,10 @@ extern crate rand;
 
 pub mod csv;
 pub mod koe;
-pub mod central_body;
+pub mod cb;
 pub mod tick;
-pub use central_body::*;
+
+pub use cb::*;
 pub use csv::*;
 pub use koe::*;
 pub use tick::*;
@@ -14,7 +15,8 @@ pub use tick::*;
 mod tests {
     use std::f64::consts::PI;
     use std::rc::*;
-    use central_body::*;
+    use cb::*;
+    use csv::*;
     use koe::*;
     use rand::*;
     use nalgebra::*;
@@ -31,9 +33,9 @@ mod tests {
         let mut m0_ok = 0;
         for _ in 0..iterations {
             let cb = get_random_cb();
-            let koe0 = get_random_koe(Rc::<CentralBody>::new(cb));
-            let csv0 = koe0.to_csv();
-            let koe1 = csv0.to_koe();
+            let koe0 = get_random_koe(Rc::<CB>::new(cb));
+            let csv0 = CSV::from_koe(koe0.clone());
+            let koe1 = KOE::from_csv(csv0);
             if approx_eq_eps(&koe0.a, &koe1.a, &eps) {
                 a_ok += 1;
             }
@@ -114,10 +116,10 @@ mod tests {
         let mut v_ok = 0;
         for _ in 0..iterations {
             let cb = get_random_cb();
-            let koe0 = get_random_koe(Rc::<CentralBody>::new(cb));
-            let csv0 = koe0.to_csv();
-            let koe1 = csv0.to_koe();
-            let csv1 = koe1.to_csv();
+            let koe0 = get_random_koe(Rc::<CB>::new(cb));
+            let csv0 = CSV::from_koe(koe0);
+            let koe1 = KOE::from_csv(csv0.clone());
+            let csv1 = CSV::from_koe(koe1);
             if csv0.r.approx_eq_eps(&csv1.r, &eps) {
                 r_ok += 1;
             }
@@ -150,25 +152,27 @@ mod tests {
         }
     }
 
-    fn get_random_cb() -> CentralBody {
+    fn get_random_cb() -> CB {
         let mut rng = thread_rng();
-        let up = normalize(
+        let k = normalize(
                 &Vec3::new( // Up vector
                     rng.gen_range(0.1, 1.0),
                     rng.gen_range(0.1, 1.0),
                     rng.gen_range(0.1, 1.0)
                     )
             );
-        let x_axis = Vec3::<f64>::new(1.0, 0.0, 0.0);
-        let reference = normalize(&cross(&x_axis, &up));
-        CentralBody::new(
+        let arbitrary_vec = Vec3::<f64>::new(1.0, 0.0, 0.0);
+        let i = normalize(&cross(&arbitrary_vec, &k));
+        let j = normalize(&cross(&k, &i));
+        CB::new(
             rng.gen_range(1.0e9, 1.0e25), // Standard Gravitational Parameter
-            up,
-            reference
+            i,
+            j,
+            k
         )
     }
 
-    fn get_random_koe(cb: Rc<CentralBody>) -> KOE {
+    fn get_random_koe(cb: Rc<CB>) -> KOE {
         let mut rng = thread_rng();
         let ecc = rng.gen_range(0.0, 1.0);
         let inc = rng.gen_range(0.0, PI);

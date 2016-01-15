@@ -1,21 +1,22 @@
 extern crate nalgebra;
-use self::nalgebra::*;
-use central_body::*;
+use nalgebra::*;
+use cb::*;
 use csv::*;
 use std::rc::*;
 use tick::*;
+use std::f64::consts::*;
 
-// Keplerian Orbital Elements
-#[derive(Clone, Debug)]
+/* Keplerian Orbital Elements */
+#[derive(Clone)]
 pub struct KOE {
     pub a: f64,
     pub e: f64,
     pub inc: f64,
     pub lan: f64,
     pub ap: f64,
-    pub m0: f64, // Mean anomaly
-    pub cb: Rc<CentralBody>,
-    pub to_csv_rot: Rot3<f64>,
+    pub m0: f64,
+    pub rot: Rot3<f64>,
+    pub cb: Rc<CB>,
 }
 
 impl Tick for KOE {
@@ -28,23 +29,23 @@ impl Tick for KOE {
             lan: self.lan,
             ap: self.ap,
             m0: self.m0 + n * dt,
+            rot: self.rot,
             cb: self.cb.clone(),
-            to_csv_rot: self.to_csv_rot,
         }
     }
 }
 
 impl KOE {
-    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: Rc<CentralBody>) -> KOE {
+    pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: Rc<CB>) -> KOE {
         let mut rot = Rot3::new_identity(3);
         if approx_eq(&inc, &0.0) {
             if !approx_eq(&e, &0.0) {
-                rot = Rot3::new(cb.up * ap);
+                rot = Rot3::new(cb.k * ap);
             }
         } else {
-            let lan_axisangle = cb.up * lan;
-            let inc_axisangle = cb.reference * inc;
-            let ap_axisangle = cb.up * ap;
+            let lan_axisangle = cb.k * lan;
+            let inc_axisangle = cb.i * inc;
+            let ap_axisangle = cb.k * ap;
             rot = Rot3::new(lan_axisangle);
             rot = rot.prepend_rotation(&inc_axisangle);
             if !approx_eq(&e, &0.0) {
@@ -58,31 +59,85 @@ impl KOE {
             lan: lan,
             ap: ap,
             m0: m0,
+            rot: rot,
             cb: cb,
-            to_csv_rot: rot,
         }
-    }
-    
-    pub fn to_csv(&self) -> CSV {
-        let m0 = self.m0;
-        let iterations = 10;
-        let ea = KOE::newton_raphson(&m0, &self.e, &iterations);
-        let ta = 2.0*((1.0+self.e).sqrt()*(ea/2.0).sin())
-            .atan2((1.0-self.e).sqrt()*(ea/2.0).cos());
-        let dist = self.a*(1.0-self.e*ea.cos());
-        let mut r = (self.cb.reference*ta.cos() + self.cb.right*ta.sin()) * dist;
-        let mut v = (self.cb.reference*(-ea.sin()) +
-                    self.cb.right*((1.0-self.e.powf(2.0)).sqrt()*ea.cos())) * ((self.cb.mu*self.a).sqrt()/dist);
-        r = self.to_csv_rot.transform(&r);
-        v = self.to_csv_rot.transform(&v);
-        CSV::new(r, v, self.cb.clone())
     }
 
-    fn newton_raphson(m0: &f64, e: &f64, iterations: &i32) -> f64 {
-        let mut ea = m0.clone();
-        for _ in 0..*iterations {
-            ea  = ea - (ea - e*ea.sin() - m0)/(1.0 - e*ea.cos());
+    pub fn from_csv(csv: CSV) -> KOE {
+        let r = csv.r;
+        let v = csv.v;
+
+        let mu = &csv.cb.mu;
+
+        let h = cross(&r, &v);
+        let e = cross(&v, &h)/ *mu - normalize(&r);
+        let n = cross(&csv.cb.k, &h);
+
+        let cos_inc = dot(&h, &csv.cb.k)/(norm(&h));
+        let inc = if approx_eq(&cos_inc, &1.0) {    
+            0.0
+        } else {
+            cos_inc.acos()
+        };
+
+        let es = norm(&e);
+        
+        let mut lan = if dot(&n, &csv.cb.j) >= 0.0 {
+            (dot(&n, &csv.cb.i)/norm(&n)).acos()
+        } else {
+            2.0*PI - (dot(&n, &csv.cb.i)/norm(&n)).acos()
+        };
+        
+        let right = cross(&h, &n);
+        let mut ap = if dot(&e, &right) >= 0.0 {
+            (dot(&n, &e)/(norm(&n)*norm(&e))).acos()
+        } else {
+            2.0*PI - (dot(&n, &e)/(norm(&n)*norm(&e))).acos()
+        };
+        
+        if approx_eq(&es, &0.0) {
+            ap = 0.0;
         }
-        ea
+        if approx_eq(&inc, &0.0) {
+            lan = 0.0;
+            if !approx_eq(&es, &0.0) {
+                ap = if dot(&e, &csv.cb.j) >= 0.0 {
+                    (dot(&csv.cb.i, &e)/norm(&e)).acos()
+                } else {
+                    2.0*PI - (dot(&csv.cb.i, &e)/norm(&e)).acos()
+                };
+            } else {
+                ap = 0.0;
+            }
+        }
+
+        let mut ta = if dot(&r, &v) >= 0.0 {
+            (dot(&e, &r)/(norm(&e)*norm(&r))).acos()
+        } else {
+            2.0*PI - (dot(&e, &r)/(norm(&e)*norm(&r))).acos()
+        };
+        
+        if approx_eq(&es, &0.0) {
+            // Compute argument of latitude
+            if approx_eq(&inc, &0.0) {
+                ta = if dot(&csv.cb.i, &v) <= 0.0 {
+                    (dot(&csv.cb.i, &r)/(norm(&csv.cb.i)*norm(&r))).acos()
+                } else {
+                    2.0*PI - (dot(&csv.cb.i, &r)/(norm(&csv.cb.i)*norm(&r))).acos()
+                }
+            } else {
+                ta = if dot(&n, &v) <= 0.0 {
+                    (dot(&n, &r)/(norm(&n)*norm(&r))).acos()
+                } else {
+                    2.0*PI - (dot(&n, &r)/(norm(&n)*norm(&r))).acos()
+                }
+            }
+        }
+
+        let ea = 2.0*((ta/2.0).tan()/((1.0+es)/(1.0-es)).sqrt()).atan();
+        let m0 = ea - es * ea.sin();
+        let a = 1.0/(2.0/norm(&r) - sqnorm(&v)/mu);
+        KOE::new(a, es, inc, lan, ap, m0, csv.cb.clone())
     }
 }
