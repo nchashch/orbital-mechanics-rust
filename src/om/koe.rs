@@ -33,15 +33,9 @@ pub struct KOE {
 impl Tick for KOE {
     fn tick(&self, dt: f64) -> Self {
         KOE {
-            a: self.a,
-            e: self.e,
-            inc: self.inc,
-            lan: self.lan,
-            ap: self.ap,
             m0: self.m0 + self.n * dt,
-            n: self.n,
-            rot: self.rot,
             cb: self.cb.clone(),
+            ..*self
         }
     }
 }
