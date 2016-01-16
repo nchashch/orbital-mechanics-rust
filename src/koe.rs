@@ -6,16 +6,25 @@ use std::rc::*;
 use tick::*;
 use std::f64::consts::*;
 
-/* Keplerian Orbital Elements */
+/// Keplerian Orbital Elements.
 #[derive(Clone)]
 pub struct KOE {
+    /// Semi Major Axis.
     pub a: f64,
+    /// Eccentricity.
     pub e: f64,
+    /// Inclination.
     pub inc: f64,
+    /// Longitude of Ascending Node.
     pub lan: f64,
+    /// Argument of Periapsis.
     pub ap: f64,
+    /// Mean anomaly.
     pub m0: f64,
+    /// A matrix that transforms a vector lying in i, j plane into a corresponding vector lying in the orbital plane
+    /// defined by inc and lan.
     pub rot: Rot3<f64>,
+    /// Reference to the central body that this object orbits.
     pub cb: Rc<CB>,
 }
 
@@ -36,6 +45,7 @@ impl Tick for KOE {
 }
 
 impl KOE {
+    /// Construct KOE from orbital elements.
     pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: Rc<CB>) -> KOE {
         let mut rot = Rot3::new_identity(3);
         if approx_eq(&inc, &0.0) {
@@ -64,6 +74,7 @@ impl KOE {
         }
     }
 
+    /// Construct KOE from CSV.
     pub fn from_csv(csv: CSV) -> KOE {
         let r = csv.r;
         let v = csv.v;

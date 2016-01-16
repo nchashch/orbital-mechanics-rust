@@ -4,19 +4,24 @@ use koe::*;
 use cb::*;
 use std::rc::*;
 
-/* Cartesian State Vectors */
+/// Cartesian State Vectors.
 #[derive(Clone)]
 pub struct CSV {
+    /// Position.
     pub r: Vec3<f64>,
+    /// Velocity.
     pub v: Vec3<f64>,
+    /// Reference to the central body that this object orbits.
     pub cb: Rc<CB>,
 }
 
 impl CSV {
+    /// Construct CSV from position and velocity.
     pub fn new(r: Vec3<f64>, v: Vec3<f64>, cb: Rc<CB>) -> CSV {
         CSV { r: r, v: v, cb: cb }
     }
 
+    /// Construct CSV from KOE.
     pub fn from_koe(koe: KOE) -> CSV {
         let m0 = koe.m0;
         let iterations = 10;
