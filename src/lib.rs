@@ -154,16 +154,25 @@ mod tests {
 
     fn get_random_cb() -> CB {
         let mut rng = thread_rng();
-        let k = normalize(
-                &Vec3::new( // Up vector
-                    rng.gen_range(0.1, 1.0),
-                    rng.gen_range(0.1, 1.0),
-                    rng.gen_range(0.1, 1.0)
+        let rand_rot_vec =
+            normalize(
+                &Vec3::<f64>::new( // Up vector
+                    rng.gen_range(-1.0, 1.0),
+                    rng.gen_range(-1.0, 1.0),
+                    rng.gen_range(-1.0, 1.0)
                     )
-            );
-        let arbitrary_vec = Vec3::<f64>::new(1.0, 0.0, 0.0);
-        let i = normalize(&cross(&arbitrary_vec, &k));
-        let j = normalize(&cross(&k, &i));
+            )*rng.gen_range(0.0, 2.0*PI);
+
+        let rand_rot = Rot3::<f64>::new(rand_rot_vec);
+
+        let i = Vec3::<f64>::new(1.0, 0.0, 0.0);
+        let j = Vec3::<f64>::new(0.0, 1.0, 0.0);
+        let k = Vec3::<f64>::new(0.0, 0.0, 1.0);
+
+        let i = rand_rot.transform(&i);
+        let j = rand_rot.transform(&j);
+        let k = rand_rot.transform(&k);
+        
         CB::new(
             rng.gen_range(1.0e9, 1.0e25), // Standard Gravitational Parameter
             i,
