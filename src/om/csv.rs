@@ -2,6 +2,7 @@ extern crate nalgebra;
 use nalgebra::*;
 use om::koe::*;
 use om::cb::*;
+use tick::*;
 use std::rc::*;
 
 /// Cartesian State Vectors.
@@ -15,10 +16,24 @@ pub struct CSV {
     pub cb: Rc<CB>,
 }
 
+impl Tick for CSV {
+    fn tick(&self, dt: f64) -> Self {
+        CSV {
+            r: self.r + self.v * dt,
+            cb: self.cb.clone(),
+            ..*self
+        }
+    }
+}
+
 impl CSV {
     /// Construct CSV from position and velocity.
     pub fn new(r: Vec3<f64>, v: Vec3<f64>, cb: Rc<CB>) -> CSV {
-        CSV { r: r, v: v, cb: cb }
+        CSV {
+            r: r,
+            v: v,
+            cb: cb,
+        }
     }
 
     /// Construct CSV from KOE.

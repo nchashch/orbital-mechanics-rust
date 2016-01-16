@@ -22,7 +22,12 @@ impl CB {
         assert!(approx_eq(&norm(&j), &1.0));
         assert!(approx_eq(&norm(&k), &1.0));
         assert!(approx_eq(&cross(&i, &j), &k));
-        CB {mu: mu, i: i, j: j, k: k }
+        CB {
+            mu: mu,
+            i: i,
+            j: j,
+            k: k,
+        }
     }
 
     /// Find what value does a given vector has in the coordinate system associated with a different central body.
