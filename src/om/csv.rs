@@ -1,7 +1,7 @@
 extern crate nalgebra;
 use nalgebra::*;
-use koe::*;
-use cb::*;
+use om::koe::*;
+use om::cb::*;
 use std::rc::*;
 
 /// Cartesian State Vectors.

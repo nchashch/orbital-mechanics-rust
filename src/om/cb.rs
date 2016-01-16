@@ -1,6 +1,5 @@
 use nalgebra::*;
 
-
 /// Central body.
 pub struct CB {
     /// Standard gravitational parameter.

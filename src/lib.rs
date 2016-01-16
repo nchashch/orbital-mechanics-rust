@@ -1,23 +1,15 @@
 extern crate nalgebra;
 extern crate rand;
 
-pub mod csv;
-pub mod koe;
-pub mod cb;
-pub mod tick;
-
-pub use cb::*;
-pub use csv::*;
-pub use koe::*;
+pub mod om;
+mod tick;
 pub use tick::*;
 
 #[cfg(test)]
 mod tests {
     use std::f64::consts::PI;
     use std::rc::*;
-    use cb::*;
-    use csv::*;
-    use koe::*;
+    use om::*;
     use rand::*;
     use nalgebra::*;
 

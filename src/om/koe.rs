@@ -1,7 +1,7 @@
 extern crate nalgebra;
 use nalgebra::*;
-use cb::*;
-use csv::*;
+use om::cb::*;
+use om::csv::*;
 use std::rc::*;
 use tick::*;
 use std::f64::consts::*;
@@ -90,27 +90,27 @@ impl KOE {
         let n = cross(&csv.cb.k, &h);
 
         let cos_inc = dot(&h, &csv.cb.k)/(norm(&h));
-        let inc = if approx_eq(&cos_inc, &1.0) {    
+        let inc = if approx_eq(&cos_inc, &1.0) {
             0.0
         } else {
             cos_inc.acos()
         };
 
         let es = norm(&e);
-        
+
         let mut lan = if dot(&n, &csv.cb.j) >= 0.0 {
             (dot(&n, &csv.cb.i)/norm(&n)).acos()
         } else {
             2.0*PI - (dot(&n, &csv.cb.i)/norm(&n)).acos()
         };
-        
+
         let right = cross(&h, &n);
         let mut ap = if dot(&e, &right) >= 0.0 {
             (dot(&n, &e)/(norm(&n)*norm(&e))).acos()
         } else {
             2.0*PI - (dot(&n, &e)/(norm(&n)*norm(&e))).acos()
         };
-        
+
         if approx_eq(&es, &0.0) {
             ap = 0.0;
         }
@@ -132,7 +132,7 @@ impl KOE {
         } else {
             2.0*PI - (dot(&e, &r)/(norm(&e)*norm(&r))).acos()
         };
-        
+
         if approx_eq(&es, &0.0) {
             // Compute argument of latitude
             if approx_eq(&inc, &0.0) {
