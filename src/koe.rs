@@ -21,6 +21,8 @@ pub struct KOE {
     pub ap: f64,
     /// Mean anomaly.
     pub m0: f64,
+    /// Mean motion.
+    pub n: f64,
     /// A matrix that transforms a vector lying in i, j plane into a corresponding vector lying in the orbital plane
     /// defined by inc and lan.
     pub rot: Rot3<f64>,
@@ -30,14 +32,14 @@ pub struct KOE {
 
 impl Tick for KOE {
     fn tick(&self, dt: f64) -> Self {
-        let n = (self.cb.mu/self.a.powf(3.0)).sqrt();
         KOE {
             a: self.a,
             e: self.e,
             inc: self.inc,
             lan: self.lan,
             ap: self.ap,
-            m0: self.m0 + n * dt,
+            m0: self.m0 + self.n * dt,
+            n: self.n,
             rot: self.rot,
             cb: self.cb.clone(),
         }
@@ -62,6 +64,7 @@ impl KOE {
                 rot = rot.prepend_rotation(&ap_axisangle);
             }
         }
+        let n = (cb.mu/a.powf(3.0)).sqrt();
         KOE {
             a: a,
             e: e,
@@ -69,6 +72,7 @@ impl KOE {
             lan: lan,
             ap: ap,
             m0: m0,
+            n: n,
             rot: rot,
             cb: cb,
         }
