@@ -12,52 +12,53 @@ mod tests {
     use om::*;
     use rand::*;
     use nalgebra::*;
+    
+    const ITERATIONS: u32 = 10000;
+    const EPS: f64 = 1.0e-3;
 
     #[test]
     fn koe_invariance() {
-        let iterations = 10000;
-        let eps = 1.0e-3;
         let mut a_ok = 0;
         let mut e_ok = 0;
         let mut inc_ok = 0;
         let mut lan_ok = 0;
         let mut ap_ok = 0;
         let mut m0_ok = 0;
-        for _ in 0..iterations {
+        for _ in 0..ITERATIONS {
             let cb = get_random_cb();
             let koe0 = get_random_koe(Rc::<CB>::new(cb));
             let csv0 = CSV::from_koe(koe0.clone());
             let koe1 = KOE::from_csv(csv0);
-            if approx_eq_eps(&koe0.a, &koe1.a, &eps) {
+            if approx_eq_eps(&koe0.a, &koe1.a, &EPS) {
                 a_ok += 1;
             }
-            if approx_eq_eps(&koe0.e, &koe1.e, &eps) {
+            if approx_eq_eps(&koe0.e, &koe1.e, &EPS) {
                 e_ok += 1;
             }
-            if approx_eq_eps(&koe0.inc, &koe1.inc, &eps) {
+            if approx_eq_eps(&koe0.inc, &koe1.inc, &EPS) {
                 inc_ok += 1;
             }
-            if approx_eq_eps(&koe0.lan, &koe1.lan, &eps) {
+            if approx_eq_eps(&koe0.lan, &koe1.lan, &EPS) {
                 lan_ok += 1;
             }
-            if approx_eq_eps(&koe0.ap, &koe1.ap, &eps) {
+            if approx_eq_eps(&koe0.ap, &koe1.ap, &EPS) {
                 ap_ok += 1;
             }
-            if approx_eq_eps(&koe0.m0, &koe1.m0, &eps) {
+            if approx_eq_eps(&koe0.m0, &koe1.m0, &EPS) {
                 m0_ok += 1;
             }
         }
-        let a_ok_f = a_ok as f32 / iterations as f32;
-        let e_ok_f = e_ok as f32 / iterations as f32;
-        let inc_ok_f = inc_ok as f32 / iterations as f32;
-        let lan_ok_f = lan_ok as f32 / iterations as f32;
-        let ap_ok_f = ap_ok as f32 / iterations as f32;
-        let m0_ok_f = m0_ok as f32 / iterations as f32;
+        let a_ok_f = a_ok as f32 / ITERATIONS as f32;
+        let e_ok_f = e_ok as f32 / ITERATIONS as f32;
+        let inc_ok_f = inc_ok as f32 / ITERATIONS as f32;
+        let lan_ok_f = lan_ok as f32 / ITERATIONS as f32;
+        let ap_ok_f = ap_ok as f32 / ITERATIONS as f32;
+        let m0_ok_f = m0_ok as f32 / ITERATIONS as f32;
         let threshold = 0.99;
         let mut failed = false;
 
         println!("");
-        println!("eps = {}", eps);
+        println!("EPS = {}", EPS);
         println!("threshold = {}", threshold);
         if a_ok_f < threshold {
             println!("a_ok_f = {}", a_ok_f);
@@ -102,30 +103,28 @@ mod tests {
 
     #[test]
     fn csv_invariance() {
-        let iterations = 10000;
-        let eps = 1.0e-3;
         let mut r_ok = 0;
         let mut v_ok = 0;
-        for _ in 0..iterations {
+        for _ in 0..ITERATIONS {
             let cb = get_random_cb();
             let koe0 = get_random_koe(Rc::<CB>::new(cb));
             let csv0 = CSV::from_koe(koe0);
             let koe1 = KOE::from_csv(csv0.clone());
             let csv1 = CSV::from_koe(koe1);
-            if csv0.r.approx_eq_eps(&csv1.r, &eps) {
+            if csv0.r.approx_eq_eps(&csv1.r, &EPS) {
                 r_ok += 1;
             }
-            if csv0.v.approx_eq_eps(&csv1.v, &eps) {
+            if csv0.v.approx_eq_eps(&csv1.v, &EPS) {
                 v_ok += 1;
             }
         }
-        let r_ok_f = r_ok as f32 / iterations as f32;
-        let v_ok_f = v_ok as f32 / iterations as f32;
+        let r_ok_f = r_ok as f32 / ITERATIONS as f32;
+        let v_ok_f = v_ok as f32 / ITERATIONS as f32;
         let threshold = 0.99;
         let mut failed = false;
 
         println!("");
-        println!("eps = {}", eps);
+        println!("EPS = {}", EPS);
         println!("threshold = {}", threshold);
         if r_ok_f < threshold {
             println!("r_ok_f = {}", r_ok_f);
