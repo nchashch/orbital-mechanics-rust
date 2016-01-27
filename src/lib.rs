@@ -3,7 +3,9 @@ extern crate rand;
 
 pub mod om;
 mod tick;
+mod push;
 pub use tick::*;
+pub use push::*;
 
 #[cfg(test)]
 mod tests {

@@ -3,6 +3,7 @@ use nalgebra::*;
 use om::koe::*;
 use om::cb::*;
 use tick::*;
+use push::*;
 use std::rc::*;
 
 /// Cartesian State Vectors.
@@ -20,6 +21,16 @@ impl Tick for CSV {
     fn tick(&self, dt: f64) -> Self {
         CSV {
             r: self.r + self.v * dt,
+            cb: self.cb.clone(),
+            ..*self
+        }
+    }
+}
+
+impl Push for CSV {
+    fn push(&self, dv: Vec3<f64>) -> Self {
+        CSV {
+            v: self.v + dv,
             cb: self.cb.clone(),
             ..*self
         }
