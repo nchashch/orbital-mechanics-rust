@@ -6,7 +6,12 @@ use std::rc::*;
 use tick::*;
 use std::f64::consts::*;
 
-/// Keplerian Orbital Elements.
+/// #Keplerian Orbital Elements
+/// This structure represents an orbit using
+/// six keplerian element. It also holds mean motion
+/// to avoid recomputing it for every tick() call, and
+/// rot matrix to avoid recomputing it for every CSV::from_koe() call.
+/// Like CSV it holds a reference to the central body.
 #[derive(Clone)]
 pub struct KOE {
     /// Semi Major Axis.
@@ -24,7 +29,7 @@ pub struct KOE {
     /// Mean motion.
     pub n: f64,
     /// A matrix that transforms a vector lying in i, j plane into a corresponding vector lying in the orbital plane
-    /// defined by inc and lan, it is stored in KOE to optimize CSV::from_koe() function
+    /// defined by inc and lan, it is stored in KOE to avoid recomputing it for every CSV::from_koe() call.
     pub rot: Rot3<f64>,
     /// Reference to the central body.
     pub cb: Rc<CB>,
@@ -41,7 +46,7 @@ impl Tick for KOE {
 }
 
 impl KOE {
-    /// Construct KOE from orbital elements.
+    /// Construct KOE from orbital elements and CB reference.
     pub fn new(a: f64, e: f64, inc: f64, lan: f64, ap: f64, m0: f64, cb: Rc<CB>) -> KOE {
         // Vector cb.i points towards intersection of 0th meridian and equator
         // Vector cb.k points towards north pole

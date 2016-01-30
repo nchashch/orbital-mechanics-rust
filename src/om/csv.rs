@@ -6,7 +6,10 @@ use tick::*;
 use push::*;
 use std::rc::*;
 
-/// Cartesian State Vectors.
+/// #Cartesian State Vectors
+/// This structure represents an orbit using a
+/// radius vector and a velocity vector.
+/// It holds a reference to the central body.
 #[derive(Clone)]
 pub struct CSV {
     /// Radius vector.
