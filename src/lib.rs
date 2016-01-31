@@ -17,6 +17,7 @@ mod tests {
     
     const ITERATIONS: u32 = 10000;
     const EPS: f64 = 1.0e-3;
+    const THRESHOLD: f32 = 0.99;
 
     #[test]
     fn koe_invariance() {
@@ -56,50 +57,50 @@ mod tests {
         let lan_ok_f = lan_ok as f32 / ITERATIONS as f32;
         let ap_ok_f = ap_ok as f32 / ITERATIONS as f32;
         let m0_ok_f = m0_ok as f32 / ITERATIONS as f32;
-        let threshold = 0.99;
         let mut failed = false;
 
         println!("");
+        println!("ITERATIONS = {}", ITERATIONS);
         println!("EPS = {}", EPS);
-        println!("threshold = {}", threshold);
-        if a_ok_f < threshold {
+        println!("THRESHOLD = {}", THRESHOLD);
+        if a_ok_f < THRESHOLD {
             println!("a_ok_f = {}", a_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if e_ok_f < threshold {
+        if e_ok_f < THRESHOLD {
             println!("e_ok_f = {}", e_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if inc_ok_f < threshold {
+        if inc_ok_f < THRESHOLD {
             println!("inc_ok_f = {}", inc_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if lan_ok_f < threshold {
+        if lan_ok_f < THRESHOLD {
             println!("lan_ok_f = {}", lan_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if ap_ok_f < threshold {
+        if ap_ok_f < THRESHOLD {
             println!("ap_ok_f = {}", ap_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if m0_ok_f < threshold {
+        if m0_ok_f < THRESHOLD {
             println!("m0_ok_f = {}", m0_ok_f);
             if !failed {
                 failed = true;
             }
         }
         if failed {
-            panic!("success rate for one of the parameters is below threshold");
+            panic!("success rate is below threshold");
         }
     }
 
@@ -122,26 +123,25 @@ mod tests {
         }
         let r_ok_f = r_ok as f32 / ITERATIONS as f32;
         let v_ok_f = v_ok as f32 / ITERATIONS as f32;
-        let threshold = 0.99;
         let mut failed = false;
 
         println!("");
         println!("EPS = {}", EPS);
-        println!("threshold = {}", threshold);
-        if r_ok_f < threshold {
+        println!("THRESHOLD = {}", THRESHOLD);
+        if r_ok_f < THRESHOLD {
             println!("r_ok_f = {}", r_ok_f);
             if !failed {
                 failed = true;
             }
         }
-        if v_ok_f < threshold {
+        if v_ok_f < THRESHOLD {
             println!("v_ok_f = {}", v_ok_f);
             if !failed {
                 failed = true;
             }
         }
         if failed {
-            panic!("success rate for some of the parameters is below the threshold");
+            panic!("success rate is below threshold");
         }
     }
 
