@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Nikita Chashchinskii <nikita.chashinsky@yandex.ru>"]
 
 [dependencies]
-nalgebra = "0.4"
+nalgebra = "0.5"
 rand = "0.3"
