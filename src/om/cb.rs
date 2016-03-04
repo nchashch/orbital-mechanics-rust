@@ -32,11 +32,4 @@ impl CB {
             k: k,
         }
     }
-
-    /// Find what value does a given vector has in the coordinate system associated with a different central body.
-    pub fn change_cb(&self, vec: Vec3<f64>, other: CB) -> Vec3<f64> {
-        other.i * dot(&vec, &self.i) +
-        other.j * dot(&vec, &self.j) +
-        other.k * dot(&vec, &self.k)
-    }
 }
