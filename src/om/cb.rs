@@ -16,14 +16,19 @@ pub struct CB {
 }
 
 impl CB {
-    /// Create a new central body asserting that i, j, k compose an orthonormal right-handed vector basis.
+    /// Create a new central body asserting that i, j, k vector basis yields an orthonormal right-handed coordinate system.
     pub fn new(mu: f64, i: Vec3<f64>, j: Vec3<f64>, k: Vec3<f64>) -> CB {
+        // Assert that the basis vectors are orthogonal
         assert!(approx_eq(&dot(&i, &j), &0.0));
         assert!(approx_eq(&dot(&i, &k), &0.0));
         assert!(approx_eq(&dot(&j, &k), &0.0));
+
+        // Assert that the basis vectors all have length 1
         assert!(approx_eq(&norm(&i), &1.0));
         assert!(approx_eq(&norm(&j), &1.0));
         assert!(approx_eq(&norm(&k), &1.0));
+
+        // Assert that the vector basis is right handed
         assert!(approx_eq(&cross(&i, &j), &k));
         CB {
             mu: mu,

@@ -191,9 +191,10 @@ impl KOE {
             }
         }
 
-        // Eccentric anomaly
+        // Eccentric anomaly (intermidiate step to compute mean anomaly)
         let ea = 2.0*((ta/2.0).tan()/((1.0+es)/(1.0-es)).sqrt()).atan();
-        // Mean anomaly
+        // Mean anomaly (it is used because it changes linearly with time,
+        // and for that reason is cheap to update)
         let m0 = ea - es * ea.sin();
         // Semi Major Axis
         let a = 1.0/(2.0/norm(&r) - sqnorm(&v)/mu);
